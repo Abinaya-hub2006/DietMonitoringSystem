@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diet Monitoring System</title>
+    <style>
+        body { text-align: center; font-family: 'Poppins', sans-serif; background: url('assets/food-bg.jpg'); background-size: cover; color: #333; padding: 20px; }
+        .container { max-width: 600px; margin: auto; padding: 20px; background: rgba(255, 255, 255, 0.9); border-radius: 15px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); }
+        button { background: #ff5733; color: white; padding: 12px; font-size: 16px; border: none; cursor: pointer; border-radius: 8px; margin-top: 10px; }
+        img { max-width: 100%; border-radius: 10px; margin-top: 10px; }
+        h1 { color: #ff5733; }
+        h2 { margin-top: 20px; font-size: 18px; }
+        p { font-size: 16px; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌿 Diet Monitoring System</h1>
+        <input type="file" id="imageInput" accept="image/*">
+        <button onclick="uploadImage()">Analyze Food</button>
+
+        <h2>📷 Uploaded Image</h2>
+        <img id="foodImage" style="display:none;">
+
+        <h2>🔎 Food Analysis Results</h2>
+        <p id="result">Awaiting analysis...</p>
+    </div>
+
+    <script>
+        function uploadImage() {
+            let fileInput = document.getElementById('imageInput');
+            let formData = new FormData();
+            formData.append("image", fileInput.files[0]);
+
+            fetch("/upload", { method: "POST", body: formData })
+            .then(res => res.json())
+            .then(data => {
+                let imageUrl = URL.createObjectURL(fileInput.files[0]); // Use the uploaded image directly
+                document.getElementById("foodImage").src = imageUrl;
+                document.getElementById("foodImage").style.display = "block";
+
+                document.getElementById("result").innerHTML = `
+                    🍔 **Category:** ${data.food_category} <br> 
+                    🔥 **Calories per cm³:** ${data.calories_per_cm3} <br> 
+                    🍽️ **Estimated Calories:** ${data.estimated_calories_kcal} kcal <br> 
+                    🥦 **Vitamins:** ${data.vitamins.join(", ")}`;
+            });
+        }
+    </script>
+</body>
+</html>
